@@ -344,6 +344,10 @@ Beiträge zu diesem Projekt sind willkommen! Bitte folge diesen Schritten:
 
 Dieses Projekt ist unter der MIT-Lizenz lizenziert.
 
+## Cloud Deployment
 
+The documented AWS deployment includes Amazon EC2, Docker, Amazon RDS, Amazon S3, IAM roles and restricted network access.
 
+See the complete deployment documentation:
 
+[Cloud Deployment Documentation](docs/CLOUD_DEPLOYMENT.md)

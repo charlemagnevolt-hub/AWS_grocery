@@ -5,3 +5,12 @@ frontend/src/config.js~
 venv/
 
 .env
+.venv/
+.idea/
+backend/.idea/
+__pycache__/
+*.py[cod]
+*.log
+*.log.*
+*~
+PROGRESS.md
