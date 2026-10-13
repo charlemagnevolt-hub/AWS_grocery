@@ -1,5 +1,40 @@
 # GroceryMate
 
+## Cloud Engineering Portfolio Context
+
+This repository documents my applied Cloud Engineering work in the Masterschool program.
+
+The GroceryMate application was originally developed and provided as a course project by Alejandro Roman Ibanez. My work in this fork focuses on the cloud infrastructure and operational deployment of the application.
+
+The implemented cloud engineering scope includes:
+
+* Python 3.12 application setup
+* Docker and Docker Compose
+* Amazon EC2 deployment
+* Gunicorn application service
+* PostgreSQL migration to Amazon RDS
+* Private Amazon S3 storage
+* IAM role based access without static AWS access keys
+* Security Group configuration
+* Application and infrastructure verification
+* AWS cost and resource monitoring
+
+This repository complements my work on runtime control and execution authority for agentic systems by demonstrating practical experience with cloud infrastructure, identity, storage, networking and application deployment.
+
+For the complete implementation record, see:
+
+[Cloud Deployment Documentation](docs/CLOUD_DEPLOYMENT.md)
+
+### Attribution
+
+Original GroceryMate course application:
+
+[AlejandroRomanIbanez/AWS_grocery](https://github.com/AlejandroRomanIbanez/AWS_grocery)
+
+Cloud deployment, AWS integration and project documentation in this fork:
+
+Dr. Torsten Bernasco
+
 [Für das deutsche ReadMe hier klicken](#grocerymate-deutsch)
 
 ## 🏆 GroceryMate E-Commerce Platform
@@ -71,7 +106,7 @@ Ensure the following dependencies are installed before running the application:
 ### 🔹 Clone Repository
 
 ```sh
-git clone --branch version2 https://github.com/AlejandroRomanIbanez/AWS_grocery.git && cd AWS_grocery
+git clone --branch version2 https://github.com/charlemagnevolt-hub/AWS_grocery.git && cd AWS_grocery
 ```
 
 ### 🔹 Configure PostgreSQL
@@ -243,7 +278,7 @@ Stelle sicher, dass die folgenden Abhängigkeiten installiert sind, bevor du die
 ### 🔹 Repository klonen
 
 ```sh
-git clone --branch version2 https://github.com/AlejandroRomanIbanez/AWS_grocery.git && cd AWS_grocery
+git clone --branch version2 https://github.com/charlemagnevolt-hub/AWS_grocery.git && cd AWS_grocery
 ```
 
 ### 🔹 PostgreSQL konfigurieren
