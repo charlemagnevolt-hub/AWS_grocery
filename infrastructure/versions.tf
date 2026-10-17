@@ -16,7 +16,7 @@ provider "aws" {
     tags = {
       Project   = var.project_name
       ManagedBy = "Terraform"
-      Owner     = "Dr. Torsten Bernasco"
+      Owner     = var.owner
     }
   }
 }

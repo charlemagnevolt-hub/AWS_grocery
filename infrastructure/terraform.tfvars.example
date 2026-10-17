@@ -1,6 +1,9 @@
-# Copy this file to terraform.tfvars before planning.
-# Never commit terraform.tfvars because it may contain secrets.
+# Copy to terraform.tfvars and replace every placeholder.
+# RDS manages the database password in Secrets Manager.
+# app_revision must reference a pushed application commit.
 
-allowed_ssh_cidr = "YOUR.PUBLIC.IP.ADDRESS/32"
-allowed_app_cidr = "YOUR.PUBLIC.IP.ADDRESS/32"
-db_password      = "SET_A_SECURE_PASSWORD_LOCALLY"
+allowed_ssh_cidr          = "YOUR.PUBLIC.IP.ADDRESS/32"
+allowed_app_cidr          = "YOUR.PUBLIC.IP.ADDRESS/32"
+s3_bucket_name            = "YOUR-GLOBALLY-UNIQUE-BUCKET-NAME"
+final_snapshot_identifier = "grocerymate-final-CHANGE-ME"
+app_revision             = "REPLACE_WITH_FULL_40_CHARACTER_COMMIT_SHA"

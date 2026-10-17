@@ -1,0 +1,72 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+
+dnf install -y docker git python3
+systemctl enable --now docker
+
+install -d -m 700 /etc/grocerymate
+
+REPOSITORY=$(printf '%s' '${repository_url}' | base64 --decode)
+REVISION=$(printf '%s' '${app_revision}' | base64 --decode)
+
+git clone "$REPOSITORY" /opt/grocerymate
+cd /opt/grocerymate
+git checkout --detach "$REVISION"
+
+python3 - <<'PY'
+import base64
+import json
+import pathlib
+import secrets
+
+config = json.loads(base64.b64decode("${runtime_config}"))
+config["JWT_SECRET_KEY"] = secrets.token_hex(32)
+
+for value in config.values():
+    if "\n" in value or "\r" in value:
+        raise ValueError("Invalid newline in runtime configuration")
+
+path = pathlib.Path("/etc/grocerymate/runtime.env")
+path.write_text(
+    "".join(f"{key}={value}\n" for key, value in config.items()),
+    encoding="utf-8",
+)
+path.chmod(0o600)
+PY
+
+docker build -f backend/Dockerfile -t grocerymate:local .
+
+cat > /etc/systemd/system/grocerymate-container.service <<'SERVICE'
+[Unit]
+Description=GroceryMate Docker application
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Restart=always
+RestartSec=15
+ExecStartPre=-/usr/bin/docker rm -f grocerymate-app
+ExecStart=/usr/bin/docker run --rm --name grocerymate-app --network host --env-file /etc/grocerymate/runtime.env grocerymate:local
+ExecStop=/usr/bin/docker stop -t 30 grocerymate-app
+TimeoutStopSec=45
+
+[Install]
+WantedBy=multi-user.target
+SERVICE
+
+systemctl daemon-reload
+systemctl enable --now grocerymate-container.service
+
+for attempt in $(seq 1 60); do
+    if curl --fail --silent --output /dev/null \
+        http://127.0.0.1:5000/; then
+        echo "GroceryMate HTTP check passed."
+        exit 0
+    fi
+    sleep 5
+done
+
+echo "GroceryMate did not become ready. Check the systemd journal." >&2
+exit 1

@@ -142,6 +142,25 @@ resource "aws_iam_instance_profile" "ec2" {
 }
 
 resource "aws_instance" "application" {
+  user_data = templatefile("${path.module}/user_data.sh.tftpl", {
+    runtime_config = base64encode(jsonencode({
+      AWS_DEFAULT_REGION = var.aws_region
+      RDS_SECRET_ARN     = aws_db_instance.database.master_user_secret[0].secret_arn
+      POSTGRES_HOST      = aws_db_instance.database.address
+      POSTGRES_PORT      = tostring(aws_db_instance.database.port)
+      POSTGRES_DB        = var.db_name
+      USE_S3_STORAGE     = "true"
+      S3_BUCKET_NAME     = aws_s3_bucket.avatars.bucket
+      S3_REGION          = var.aws_region
+    }))
+    repository_url = base64encode(var.repository_url)
+    app_revision   = base64encode(var.app_revision)
+  })
+
+  depends_on = [
+    aws_iam_role_policy.rds_secret,
+    aws_iam_role_policy.s3_access
+  ]
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = var.instance_type
   key_name               = var.key_name
@@ -150,7 +169,7 @@ resource "aws_instance" "application" {
 
   root_block_device {
     volume_type = "gp3"
-    volume_size = 8
+    volume_size = var.root_volume_size
     encrypted   = true
   }
 
@@ -170,23 +189,39 @@ resource "aws_db_subnet_group" "database" {
 }
 
 resource "aws_db_instance" "database" {
-  identifier             = "${var.project_name}-database"
-  engine                 = "postgres"
-  engine_version         = "15"
-  instance_class         = "db.t4g.micro"
-  allocated_storage      = 20
-  storage_type           = "gp3"
-  storage_encrypted      = true
-  db_name                = "grocerymate_db"
-  username               = var.db_username
-  password               = var.db_password
-  port                   = 5432
-  db_subnet_group_name   = aws_db_subnet_group.database.name
-  vpc_security_group_ids = [aws_security_group.database.id]
-  publicly_accessible    = false
-  skip_final_snapshot    = true
-
+  identifier                  = "${var.project_name}-database"
+  engine                      = "postgres"
+  engine_version              = "15"
+  instance_class              = "db.t4g.micro"
+  allocated_storage           = var.db_allocated_storage
+  storage_type                = "gp3"
+  storage_encrypted           = true
+  db_name                     = var.db_name
+  username                    = var.db_username
+  manage_master_user_password = true
+  port                        = 5432
+  db_subnet_group_name        = aws_db_subnet_group.database.name
+  vpc_security_group_ids      = [aws_security_group.database.id]
+  publicly_accessible         = false
+  skip_final_snapshot         = false
+  final_snapshot_identifier   = var.final_snapshot_identifier
+  deletion_protection         = true
+  backup_retention_period     = var.backup_retention_days
   lifecycle {
     prevent_destroy = true
   }
+}
+
+resource "aws_iam_role_policy" "rds_secret" {
+  name = "${var.project_name}-rds-secret"
+  role = aws_iam_role.ec2.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["secretsmanager:GetSecretValue"]
+      Resource = aws_db_instance.database.master_user_secret[0].secret_arn
+    }]
+  })
 }
