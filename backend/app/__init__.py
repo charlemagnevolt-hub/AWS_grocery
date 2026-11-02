@@ -245,12 +245,14 @@ def create_app():
     from .routes.product_routes import product_bp
     from .routes.health_routes import health_bp
     from .routes.config_routes import config_bp
+    from .routes.delivery_routes import delivery_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(product_bp)
     app.register_blueprint(health_bp)
     app.register_blueprint(config_bp)
+    app.register_blueprint(delivery_bp)
 
     def inject_backend_url():
         """Get the backend URL based on the current request, works dynamically in all environments."""

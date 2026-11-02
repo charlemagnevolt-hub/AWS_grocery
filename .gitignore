@@ -14,3 +14,6 @@ __pycache__/
 *.log.*
 *~
 PROGRESS.md
+backend/app/__init__.py.bak
+lambda/delivery_estimator/*.zip
+backend/requirements.txt.bak
