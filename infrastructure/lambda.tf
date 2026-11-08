@@ -58,3 +58,25 @@ resource "aws_iam_role_policy" "lambda_invoke" {
     }]
   })
 }
+
+data "aws_iam_role" "legacy_ec2" {
+  name = var.legacy_ec2_role_name
+}
+
+resource "aws_iam_role_policy" "legacy_lambda_invoke" {
+  name = "grocerymate-lambda-invoke"
+  role = data.aws_iam_role.legacy_ec2.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "lambda:InvokeFunction"
+        ]
+        Resource = aws_lambda_function.delivery_estimator.arn
+      }
+    ]
+  })
+}

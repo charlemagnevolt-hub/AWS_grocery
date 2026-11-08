@@ -124,3 +124,8 @@ variable "ec2_ami_id" {
   type        = string
   default     = "ami-0276cae04a46a8438"
 }
+variable "legacy_ec2_role_name" {
+  description = "IAM role used by the existing GroceryMate EC2 instance"
+  type        = string
+  default     = "GroceryMateWeek7S3Role"
+}
