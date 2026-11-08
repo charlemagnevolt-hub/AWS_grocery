@@ -80,3 +80,7 @@ resource "aws_iam_role_policy" "legacy_lambda_invoke" {
     ]
   })
 }
+resource "aws_iam_role_policy_attachment" "legacy_ec2_ssm" {
+  role       = data.aws_iam_role.legacy_ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
