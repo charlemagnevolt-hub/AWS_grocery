@@ -161,3 +161,90 @@ Pending:
 The Lambda MVP is validated at the infrastructure and
 service integration levels, but the complete deployed
 application path remains unverified.
+
+## 8. Final EC2 Integration Validation
+
+**Validation date:** 2026-11-08
+
+**Result:** PASSED
+
+This section supersedes the earlier pending EC2 HTTP
+integration test status.
+
+### Approved Application Revision
+
+Commit:
+40929d4ce0570862d7825557aff26ebd9ba7dc7c
+
+Deployment directory:
+/opt/grocerymate-lambda-mvp
+
+Docker image:
+grocerymate:lambda-mvp-40929d4
+
+### Test Environment
+
+Existing EC2:
+i-0d3f05f49de3c67b1
+
+Region:
+eu-central-1
+
+Test endpoint:
+http://127.0.0.1:5001/api/delivery/estimate
+
+The application ran in a temporary Docker container
+using host networking and a loopback-only listener.
+
+The existing Gunicorn service on port 5000 was preserved.
+
+The test used temporary SQLite configuration and
+a temporary JWT secret.
+
+AWS credentials were obtained through the EC2 IAM role.
+
+RDS was not started.
+
+### Verified HTTP Results
+
+Unauthenticated request:
+HTTP 401
+
+Authenticated request:
+HTTP 200
+
+Lambda calculation:
+Subtotal EUR 33.00
+Delivery fee EUR 4.99
+Total EUR 37.99
+Currency EUR
+
+Result:
+END TO END INTEGRATION TEST PASSED
+
+### Evidence
+
+SSM Command ID:
+ad3101f2-7f21-49eb-bc0b-9363ffc271f3
+
+SSM status:
+Success
+
+The temporary test container was configured for
+automatic removal after execution.
+
+Final EC2 state:
+stopped
+
+### Remaining Scope
+
+The complete isolated EC2 to Flask to Lambda integration
+is validated.
+
+A permanent production deployment has not been performed.
+
+The historical Gunicorn and Docker port 5000 conflict
+remains outside this isolated validation.
+
+The test did not validate live RDS database operations
+or a public production HTTP endpoint.
