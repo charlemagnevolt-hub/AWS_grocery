@@ -17,3 +17,8 @@ output "s3_bucket_name" {
   description = "Private S3 bucket used for GroceryMate avatars."
   value       = aws_s3_bucket.avatars.bucket
 }
+
+output "delivery_lambda_arn" {
+  description = "ARN of the Terraform managed delivery estimator."
+  value       = aws_lambda_function.delivery_estimator.arn
+}

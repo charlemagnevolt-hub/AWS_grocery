@@ -111,3 +111,16 @@ variable "app_revision" {
     error_message = "Use a full 40-character Git commit SHA."
   }
 }
+
+variable "lambda_function_name" {
+  description = "Name of the GroceryMate delivery estimator Lambda function."
+  type        = string
+  default     = "grocerymate-delivery-estimator"
+}
+
+
+variable "ec2_ami_id" {
+  description = "Pinned Amazon Linux 2023 AMI for eu-central-1."
+  type        = string
+  default     = "ami-0276cae04a46a8438"
+}

@@ -9,20 +9,7 @@ data "aws_subnets" "default" {
   }
 }
 
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-  owners      = ["amazon"]
 
-  filter {
-    name   = "name"
-    values = ["al2023-ami-2023*-x86_64"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-}
 
 resource "aws_security_group" "application" {
   name        = "${var.project_name}-application-sg"
@@ -67,13 +54,6 @@ resource "aws_security_group" "database" {
     security_groups = [aws_security_group.application.id]
   }
 
-  egress {
-    description = "Outbound traffic"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 }
 
 resource "aws_s3_bucket" "avatars" {
@@ -142,6 +122,8 @@ resource "aws_iam_instance_profile" "ec2" {
 }
 
 resource "aws_instance" "application" {
+  user_data_replace_on_change = true
+
   user_data = templatefile("${path.module}/user_data.sh.tftpl", {
     runtime_config = base64encode(jsonencode({
       AWS_DEFAULT_REGION = var.aws_region
@@ -159,9 +141,10 @@ resource "aws_instance" "application" {
 
   depends_on = [
     aws_iam_role_policy.rds_secret,
-    aws_iam_role_policy.s3_access
+    aws_iam_role_policy.s3_access,
+    aws_iam_role_policy.lambda_invoke
   ]
-  ami                    = data.aws_ami.amazon_linux.id
+  ami                    = var.ec2_ami_id
   instance_type          = var.instance_type
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.application.id]
@@ -192,7 +175,7 @@ resource "aws_db_instance" "database" {
   identifier                  = "${var.project_name}-database"
   engine                      = "postgres"
   engine_version              = "15"
-  instance_class              = "db.t4g.micro"
+  instance_class              = var.db_instance_class
   allocated_storage           = var.db_allocated_storage
   storage_type                = "gp3"
   storage_encrypted           = true

@@ -17,3 +17,11 @@ PROGRESS.md
 backend/app/__init__.py.bak
 lambda/delivery_estimator/*.zip
 backend/requirements.txt.bak
+
+GroceryMate_Terraform_Review.zip
+infrastructure/*.tf.*backup
+infrastructure/*.tf.review-backup
+infrastructure/*.zip
+infrastructure/*.tfplan
+infrastructure/*.tfstate
+infrastructure/*.tfstate.*
