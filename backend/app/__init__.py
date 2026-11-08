@@ -222,7 +222,8 @@ def create_app():
     """
     Creates and configures the Flask app.
     """
-    fetch_frontend()
+    if os.getenv("SKIP_FRONTEND_FETCH", "false").lower() != "true":
+        fetch_frontend()
 
     app = Flask(__name__,
                 static_folder="../../frontend/build/static",
