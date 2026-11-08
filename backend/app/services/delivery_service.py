@@ -10,7 +10,7 @@ def estimate_delivery(items):
         "DELIVERY_LAMBDA_NAME",
         "grocerymate-delivery-estimator"
     )
-    region = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
+    region = os.environ["AWS_DEFAULT_REGION"]
 
     client = boto3.client("lambda", region_name=region)
 

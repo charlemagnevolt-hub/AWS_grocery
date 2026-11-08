@@ -126,14 +126,15 @@ resource "aws_instance" "application" {
 
   user_data = templatefile("${path.module}/user_data.sh.tftpl", {
     runtime_config = base64encode(jsonencode({
-      AWS_DEFAULT_REGION = var.aws_region
-      RDS_SECRET_ARN     = aws_db_instance.database.master_user_secret[0].secret_arn
-      POSTGRES_HOST      = aws_db_instance.database.address
-      POSTGRES_PORT      = tostring(aws_db_instance.database.port)
-      POSTGRES_DB        = var.db_name
-      USE_S3_STORAGE     = "true"
-      S3_BUCKET_NAME     = aws_s3_bucket.avatars.bucket
-      S3_REGION          = var.aws_region
+      AWS_DEFAULT_REGION   = var.aws_region
+      DELIVERY_LAMBDA_NAME = var.lambda_function_name
+      RDS_SECRET_ARN       = aws_db_instance.database.master_user_secret[0].secret_arn
+      POSTGRES_HOST        = aws_db_instance.database.address
+      POSTGRES_PORT        = tostring(aws_db_instance.database.port)
+      POSTGRES_DB          = var.db_name
+      USE_S3_STORAGE       = "true"
+      S3_BUCKET_NAME       = aws_s3_bucket.avatars.bucket
+      S3_REGION            = var.aws_region
     }))
     repository_url = base64encode(var.repository_url)
     app_revision   = base64encode(var.app_revision)
