@@ -45,27 +45,12 @@ resource "aws_lambda_function" "delivery_estimator" {
   ]
 }
 
-resource "aws_iam_role_policy" "lambda_invoke" {
-  name = "${var.project_name}-lambda-invoke"
-  role = aws_iam_role.ec2.id
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect   = "Allow"
-      Action   = ["lambda:InvokeFunction"]
-      Resource = aws_lambda_function.delivery_estimator.arn
-    }]
-  })
-}
 
-data "aws_iam_role" "legacy_ec2" {
-  name = var.legacy_ec2_role_name
-}
 
 resource "aws_iam_role_policy" "legacy_lambda_invoke" {
   name = "grocerymate-lambda-invoke"
-  role = data.aws_iam_role.legacy_ec2.name
+  role = aws_iam_role.existing_ec2.name
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -81,6 +66,6 @@ resource "aws_iam_role_policy" "legacy_lambda_invoke" {
   })
 }
 resource "aws_iam_role_policy_attachment" "legacy_ec2_ssm" {
-  role       = data.aws_iam_role.legacy_ec2.name
+  role       = aws_iam_role.existing_ec2.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }

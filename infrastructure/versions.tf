@@ -24,3 +24,9 @@ provider "aws" {
     }
   }
 }
+
+# Existing resources retain their original tagging configuration.
+provider "aws" {
+  alias  = "existing"
+  region = var.aws_region
+}
